@@ -1,57 +1,51 @@
 package com.example.demo.web;
 
+import com.example.demo.entity.Track;
+import com.example.demo.repo.TrackRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
-
-import com.example.demo.entity.Track;
-import com.example.demo.repo.TrackRepository;
-
 @RestController
-@RequestMapping("/tracks")
+@RequestMapping("/api/tracks")
 public class TrackController {
 
     @Autowired
-    private TrackRepository repo;
+    private TrackRepository trackRepository;
 
+    // POST /api/tracks — Add a new track
     @PostMapping
     public ResponseEntity<String> addTrack(@RequestBody Track track) {
-        repo.save(track);
+        trackRepository.save(track);
         return new ResponseEntity<>("Track added successfully", HttpStatus.CREATED);
     }
 
+    // GET /api/tracks — Get all tracks
     @GetMapping
     public ResponseEntity<List<Track>> getTracks() {
-        List<Track> list = repo.findAll();
-
-        if (list.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        List<Track> tracks = trackRepository.findAll();
+        return new ResponseEntity<>(tracks, HttpStatus.OK);
     }
 
-    @GetMapping("/title")
+    // GET /api/tracks/search?title=xyz — Get tracks by title
+    @GetMapping("/search")
     public ResponseEntity<List<Track>> getTracksByTitle(@RequestParam String title) {
-        List<Track> list = repo.findByTitle(title);
-
-        if (list.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        List<Track> tracks = trackRepository.findByTitleContainingIgnoreCase(title);
+        return new ResponseEntity<>(tracks, HttpStatus.OK);
     }
 
+    // GET /api/tracks/{id} — Get a single track by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getTrack(@PathVariable Long id) {
-
-        Optional<Track> track = repo.findById(id);
-
+    public ResponseEntity<Object> getTrack(@PathVariable Integer id) {
+        Optional<Track> track = trackRepository.findById(Long.valueOf(id));
         if (track.isPresent()) {
             return new ResponseEntity<>(track.get(), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Track not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Track not found with id: " + id, HttpStatus.NOT_FOUND);
         }
     }
 }
