@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Employee List</title>
+
+    <style>
+        body {
+            font-family: Arial;
+        }
+
+        table {
+            background-color: #d9f2ff;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background-color: #a6e1ff;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px 12px;
+            text-align: center;
+        }
+
+        a {
+            text-decoration: none;
+            color: blue;
+        }
+
+        h2 {
+            color: #333;
+        }
+    </style>
+
+</head>
+<body>
+
+<h2>Employee List</h2>
+
+<p th:text="${message}" style="color:green;"></p>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Salary</th>
+        <th>Date of Joining</th>
+        <th>Department</th>
+        <th>Edit</th>
+        <th>Delete</th>
+    </tr>
+
+    <tr th:each="emp : ${employees}">
+        <td th:text="${emp.empId}"></td>
+        <td th:text="${emp.empName}"></td>
+        <td th:text="${emp.empSal}"></td>
+        <td th:text="${emp.empDoj}"></td>
+        <td th:text="${emp.deptName}"></td>
+        <td>
+            <a th:href="@{/edit/{id}(id=${emp.empId})}">Edit</a>
+        </td>
+        <td>
+            <a th:href="@{/delete/{id}(id=${emp.empId})}">Delete</a>
+        </td>
+    </tr>
+
+</table>
+
+</body>
+</html>
